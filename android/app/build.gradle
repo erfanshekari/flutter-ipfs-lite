@@ -1,0 +1,134 @@
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
+android {
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        main {
+            proto {
+                // In addition to the default 'src/main/proto'
+                srcDir "$projectDir/build/generated"
+                // In addition to the default '**/*.proto' (use with caution).
+                // Using an extension other than 'proto' is NOT recommended,
+                // because when proto files are published along with class files, we can
+                // only tell the type of a file from its extension.
+                include '**/*.protodevel'
+            }
+//            java {
+//                srcDirs 'build/generated/source/proto/debug/grpc'
+//                srcDirs 'build/generated/source/proto/debug/java'
+//            }
+        }
+    }
+
+    defaultConfig {
+        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId "com.example.ipfs"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            // TODO: Add your own signing config for the release build.
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.debug
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'com.google.protobuf:protoc:3.21.2'
+
+    implementation 'com.android.support:multidex:1.0.3'
+
+    api files('libs/mobile.aar')
+    implementation "io.grpc:grpc-core:$gRPCVersion"
+    implementation "io.grpc:grpc-okhttp:$gRPCVersion"
+    testImplementation "io.grpc:grpc-testing:$gRPCVersion"
+    implementation "io.grpc:grpc-stub:$gRPCVersion"
+
+    // Lite, use below for Full
+    implementation "io.grpc:grpc-protobuf-lite:$gRPCVersion"
+    implementation "com.android.support:appcompat-v7:$appcompatVersion"
+    implementation "com.android.support:support-v4:$appcompatVersion"
+
+    // Lifecycle
+//    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
+//    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
+    compileOnly "javax.annotation:javax.annotation-api:1.2"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.21.2"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:$gRPCVersion"
+        }
+        javalite {
+            artifact = "com.google.protobuf:protoc-gen-javalite:3.11.2"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            java {
+                option 'lite'
+            }
+            grpc {
+                // remove for full
+                option 'lite'
+            }
+        }
+    }
+    generatedFilesBaseDir = "$projectDir/build/generated"
+}
