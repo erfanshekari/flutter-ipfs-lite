@@ -41,21 +41,6 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-        main {
-            proto {
-                // In addition to the default 'src/main/proto'
-                srcDir "$projectDir/build/generated"
-                // In addition to the default '**/*.proto' (use with caution).
-                // Using an extension other than 'proto' is NOT recommended,
-                // because when proto files are published along with class files, we can
-                // only tell the type of a file from its extension.
-                include '**/*.protodevel'
-            }
-//            java {
-//                srcDirs 'build/generated/source/proto/debug/grpc'
-//                srcDirs 'build/generated/source/proto/debug/java'
-//            }
-        }
     }
 
     defaultConfig {
@@ -63,7 +48,7 @@ android {
         applicationId "com.example.ipfs"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 29
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -90,45 +75,47 @@ dependencies {
 
     implementation 'com.android.support:multidex:1.0.3'
 
-    api files('libs/mobile.aar')
-    implementation "io.grpc:grpc-core:$gRPCVersion"
-    implementation "io.grpc:grpc-okhttp:$gRPCVersion"
-    testImplementation "io.grpc:grpc-testing:$gRPCVersion"
-    implementation "io.grpc:grpc-stub:$gRPCVersion"
+    // Android (LICENSE done)
+//    implementation 'androidx.work:work-runtime:2.8.0-alpha02'
+//
+//    // Android (LICENSE done)
+//    implementation 'androidx.window:window:1.1.0-alpha02'
+//
+//    // Android (LICENSE done)
+//    implementation 'com.google.android.material:material:1.7.0-alpha03'
+//
+//    // Android (LICENSE done)
+//    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
+//
+//    // API (LICENSE done)
+//    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+//
+//    // API (LICENSE done)
+//    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+//
+//    // API (LICENSE done)
+//    implementation 'androidx.room:room-runtime:2.5.0-alpha02'
+//
+//    // API (LICENSE done)
+//    implementation 'com.google.code.gson:gson:2.9.0'
+//
+//    // UI Graphics (LICENSE done)
+////    implementation 'com.github.bumptech.glide:glide:4.13.2'
+//
+//    // API (LICENSE done)
+//    implementation 'androidx.recyclerview:recyclerview-selection:1.2.0-alpha01'
+//
+//    // API (LICENSE done)
+////    implementation 'androidx.appcompat:appcompat:1.6.0-alpha05'
+//
+//    // API (LICENSE done)
+//    implementation 'androidx.constraintlayout:constraintlayout:2.2.0-alpha03'
+//
+//    // API (LICENSE done)
+//    api 'com.google.guava:guava:31.1-android'
+//
+//    annotationProcessor 'androidx.room:room-compiler:2.5.0-alpha02'
 
-    // Lite, use below for Full
-    implementation "io.grpc:grpc-protobuf-lite:$gRPCVersion"
-    implementation "com.android.support:appcompat-v7:$appcompatVersion"
-    implementation "com.android.support:support-v4:$appcompatVersion"
 
-    // Lifecycle
-//    implementation "android.arch.lifecycle:extensions:$lifecycleVersion"
-//    annotationProcessor "android.arch.lifecycle:compiler:$lifecycleVersion"
-    compileOnly "javax.annotation:javax.annotation-api:1.2"
-}
-
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:3.21.2"
-    }
-    plugins {
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:$gRPCVersion"
-        }
-        javalite {
-            artifact = "com.google.protobuf:protoc-gen-javalite:3.11.2"
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            java {
-                option 'lite'
-            }
-            grpc {
-                // remove for full
-                option 'lite'
-            }
-        }
-    }
-    generatedFilesBaseDir = "$projectDir/build/generated"
+    implementation project(path: ':lite')
 }
